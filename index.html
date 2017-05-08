@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>jive motion tokyo script &omega; version</title>
+	</head>
+	<body>
+		<h1>jive motion tokyo script &omega; version</h1>
+		<div style="margin-bottom:2em;">
+			please contact iguchaaarn[at]gmail.com how to use this script.
+		</div>
+		<div class="textplaylistname" style="margin-bottom:1em;">(selected text file...)</div>
+		<div class="youtubeplaylistname" style="margin-bottom:1em;">(selected youtube playlist...)</div>
+		<div class="error" style="margin-bottom:1em;">(error message)</div>
+		
+		<div style="margin-bottom:1em;">
+			<button id="playlist-button"      disabled style="cursor:pointer;">1. Get Playlist text file data</button>
+			<button id="searchsong-button"    disabled style="cursor:pointer;">2. search Songs from youtube</button>
+			<button id="checkPlayList-button" disabled style="cursor:pointer;">3. check current youtube playlist</button>
+			<button id="addPlayList-button"   disabled style="cursor:pointer;">4. Add a song to youtube playlist</button>
+			<button id="deleteall-button" disabled style="cursor:pointer;">delete all</button>
+			
+		</div>
+		<hr/>
+		<div style="font-weight:bold;">4. added to youtube playlist</div>
+		<div class="status"></div>
+		<hr/>
+		<div style="font-weight:bold;">3. current playlist</div>
+		<div class="check"></div>
+		<hr/>
+		<div style="font-weight:bold;">1. text data</div>
+		<div class="root"></div>
+		<hr/>
+		<div style="font-weight:bold;">2. youtube search result</div>
+		<div class="result"></div>
+		<hr/>
+		<div class="post-auth" style="margin-bottom:1em;"></div>
+		<div id="login-container" class="pre-auth">
+			This application requires access to your YouTube account.
+			Please <a href="#" id="login-link">authorize</a> to continue.
+		</div>
+		
+		<!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>-->
+		
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript" src="auth.js"></script>
+		<!--
+		<script type="text/javascript" src="my_uploads.js"></script>
+		<script src="search.js"></script>
+		-->
+		<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
+
+		<script type="text/javascript" src="./moment-with-locales.min.js"></script>
+		<script type="text/javascript" src="./modernjiveplaylisting.js"></script>
+
+		<div style="display:none;">
+			<div id="video-container"></div>
+			<div class="button-container">
+				<button id="prev-button" class="paging-button" onclick="previousPage();">Previous Page</button>
+				<button id="next-button" class="paging-button" onclick="nextPage();">Next Page</button>
+			</div>
+		
+			<div id="buttons">
+				<label>
+					<input id="query" value='cats' type="text"/>
+					<button id="search-button" disabled onclick="search()">Search</button>
+				</label>
+			</div>
+			<div id="search-container"></div>
+			</div>
+		</div>
+		
+	</body>
+</html>
