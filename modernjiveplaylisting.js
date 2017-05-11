@@ -46,7 +46,7 @@ var _URL = "";
 var _playlist_id = "";
 
 _URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo.txt";
-_URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo_100.txt";
+_URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo_60.txt";
 _playlist_id = "PLsOsWUE7opcDL7XfJjEKZrqaPnEOpWbVs";
 
 var _ArraySongs = [];
@@ -157,6 +157,9 @@ var _VideoMapPic;
 			_VideoMap = new Map();
 			_VideoMapPic = new Map();
 			
+			var tag;
+			var player;
+			
 			for(var i = 0; i < _ArraySongs.length; i++) {
 				
 				song = _ArraySongs[i].trim();
@@ -176,20 +179,26 @@ var _VideoMapPic;
 					
 					}).then(function(response) {
 						
-						jsonObj = response.result;
-						videoId = jsonObj.items[0].id.videoId;
-						
-						_ArrVideoId.push(videoId);
-						
-						_VideoMap.set(videoId, jsonObj.items[0].snippet.title);
-						_VideoMapPic.set(videoId, "<img src=" + jsonObj.items[0].snippet.thumbnails.default.url + "></img>");
-						
-						$(".result").append("<div>");
-						$(".result").append("<img src=" + jsonObj.items[0].snippet.thumbnails.default.url + "></img>");
-						$(".result").append("<span style='margin-right:1em;'>[" + videoId + "] </span>");
-						$(".result").append("<span style='font-weight:bold;'>" + jsonObj.items[0].snippet.title + "</span>");
-						$(".result").append("</div>");
-						
+						try {
+								
+							jsonObj = response.result;
+							videoId = jsonObj.items[0].id.videoId;
+							
+							_ArrVideoId.push(videoId);
+							
+							_VideoMap.set(videoId, jsonObj.items[0].snippet.title);
+							_VideoMapPic.set(videoId, "<img src=" + jsonObj.items[0].snippet.thumbnails.default.url + "></img>");
+							
+							$(".result").append("<div>");
+							$(".result").append("<img src=" + jsonObj.items[0].snippet.thumbnails.default.url + "></img>");
+							
+							$(".result").append("<span style='margin-right:1em;'>[" + videoId + "] </span>");
+							$(".result").append("<span style='font-weight:bold;'>" + jsonObj.items[0].snippet.title + "</span>");
+							$(".result").append("</div>");
+							
+						} catch(e) {
+							
+						}
 						//var str = JSON.stringify(response.result);
 						//document.getElementById('console').innerHTML ='<pre>' + response.result.items[0].snippet.title + '</pre>';
 						
@@ -246,111 +255,6 @@ var _VideoMapPic;
 			
 		});
 		
-		$("#addPlayList-button").click(function(e){
-			
-			if (errCount >= _ArrVideoId.length) {
-				alert("all item added.");
-			}
-			else {
-				AddSongPlaylist(_ArrVideoId, _playlist_id);
-			}
-		});
-		
-		function AddSongPlaylist(arrVideoId, playlist_id) {
-			
-			/*
-			var counter = 0;
-			
-			for (var i = 0; i < arrVideoId.length; i++) {
-				
-				if (arrVideoId[i] == 0) {
-				} 
-				else {
-					AddSong(arrVideoId[i], playlist_id);
-					counter = counter + 1;
-				}
-			}
-			*/
-			
-			/*
-			AddSong(arrVideoId[errCount], playlist_id);
-			errCount = errCount + 1;
-			currentPlayList(playlist_id);
-			*/
-			
-			errCount = 0;
-			
-			AddSongRawAjax(arrVideoId[0], playlist_id);
-			
-			AddSongRawAjax(arrVideoId[1], playlist_id);
-			
-			AddSongRawAjax(arrVideoId[2], playlist_id);
-			
-			AddSongRawAjax(arrVideoId[3], playlist_id);
-			
-			AddSongRawAjax(arrVideoId[4], playlist_id);
-			
-		}
-		
-		function AddSongRawAjax(prmVideoId, prmPlaylistId) {
-			
-			var workURL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/worker.html?addingVideoId=" + prmVideoId + "&addingPlaylist_id=" + prmPlaylistId;
-			
-			var win = window.open(workURL, "_blank");
-			//win.close();
-			
-			/*
-			$.ajax({
-				url: "http://sirokurocya.sakura.ne.jp/development/modernjivescript/worker.html?addingVideoId=" + prmVideoId + "&addingPlaylist_id=" + prmPlaylistId,
-				async: false,
-				dataType: "text",
-				success: function(data) {
-					$(".status").append("<span style=''>" + data + "</span><br/>");
-				},
-				error: function(data) {
-					$(".status").append("<span style='color:red;'>" + data + "</span><br/>");
-				}
-				
-			});
-			*/
-			
-		}
-		
-		function AddSong(addingVideoId, addingPlaylist_id) {
-			
-			var details = {
-				videoId: addingVideoId,
-				kind: 'youtube#video'
-			}
-			
-			var request = gapi.client.youtube.playlistItems.insert({
-				part: 'snippet',
-				resource: {
-					snippet: {
-						playlistId: addingPlaylist_id,
-						resourceId: details
-					}
-				}
-			});
-			
-			try {
-				
-				request.execute(function(response) {
-					
-					jsonObj = response.result;
-					
-					$(".status").empty().append(errCount + "<br/>");
-					$(".status").append("<span style='font-weight:bold;'>" + jsonObj.snippet.title + "</span><br/>");
-					//$(".status").append("<img src=" + jsonObj.snippet.thumbnails.high.url + "></img>" + "<br/><br/>");
-					
-				});
-			
-			} catch(e) {
-				//$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + e.name + " " + e.message + "<br/>");
-			}
-			
-		}
-		
 		$("#checkPlayList-button").click(function(e){
 			
 			//currentPlayList();
@@ -386,12 +290,16 @@ var _VideoMapPic;
 				$(".result").append("<tbody>");
 				
 				$.each(response.result, function(index, item) {
-					$(".result").append("<tr>");
-					$(".result").append("<td style='margin-right:1em;'>" + _VideoMapPic.get(item.result.items[0].id) + "</td>");
-					$(".result").append("<td style='margin-right:1em;'>[" + item.result.items[0].id + "]</td>");
-					$(".result").append("<td style='margin-right:1em; font-weight:bold;'>" + _VideoMap.get(item.result.items[0].id) + "</td>");
-					$(".result").append("<td style='text-align:right; margin-left:1em;'>" + item.result.items[0].statistics.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</span></td>");
-					$(".result").append("</tr>");
+					try {
+						$(".result").append("<tr>");
+						$(".result").append("<td style='margin-right:1em;'>" + _VideoMapPic.get(item.result.items[0].id) + "</td>");
+						$(".result").append("<td style='margin-right:1em;'>[" + item.result.items[0].id + "]</td>");
+						$(".result").append("<td style='margin-right:1em; font-weight:bold;'>" + _VideoMap.get(item.result.items[0].id) + "</td>");
+						$(".result").append("<td style='text-align:right; margin-left:1em;'>" + item.result.items[0].statistics.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</span></td>");
+						$(".result").append("</tr>");
+					} catch(e) {
+						
+					}
 				});
 				
 				$(".result").append("</tbody>");
@@ -406,6 +314,93 @@ var _VideoMapPic;
 			
 		});
 		
+		$("#addPlayList-button").click(function(e){
+			
+			if (errCount >= _ArrVideoId.length) {
+				alert("all item added.");
+			}
+			else {
+				//AddSongPlaylist(_ArrVideoId, _playlist_id);
+				AddSong(_ArrVideoId, 0, _playlist_id) 
+			}
+		});
+		
+		function AddSong(addingVideoIds, idx, addingPlaylist_id) {
+			
+			gapi.client.request({
+				
+				path: '/youtube/v3/playlistItems?part=snippet',
+				method: 'POST',
+				body:JSON.stringify({
+					snippet: {
+						playlistId: addingPlaylist_id,
+						position: 0,
+						resourceId: {
+							videoId: addingVideoIds[idx],
+							kind: 'youtube#video'
+						}
+					}
+				})
+				
+			}).then(function(response) {
+				
+				jsonObj = response.result;
+				
+				$(".status").append("<span style='font-weight:bold;'>" + jsonObj.snippet.title + "</span><br/>");
+				
+				if (idx < addingVideoIds.length) {
+					AddSong(addingVideoIds, ++idx, addingPlaylist_id);
+				} else {
+					$(".status").append("[" + moment().add(9, "h").toISOString() + "] idx: " + idx);
+				}
+				
+			}, function(reason) {
+				$(".error").append("[" + moment().add(9, "h").toISOString() + "][" + addingVideoIds[i] + "]" + reason.statusText + "<br/>");
+				if (idx < addingVideoIds.length) {
+					AddSong(addingVideoIds, ++idx, addingPlaylist_id);
+				} else {
+					$(".status").append("[" + moment().add(9, "h").toISOString() + "] idx: " + idx);
+				}
+			});
+			
+			/*
+			
+			var details = {
+				videoId: addingVideoId,
+				kind: 'youtube#video'
+			}
+			
+			var request = gapi.client.youtube.playlistItems.insert({
+				part: 'snippet',
+				resource: {
+					snippet: {
+						playlistId: addingPlaylist_id,
+						resourceId: details
+					}
+				}
+			});
+			
+			try {
+				
+				request.execute(function(response) {
+					
+					jsonObj = response.result;
+					
+					$(".status").empty().append(errCount + "<br/>");
+					$(".status").append("<span style='font-weight:bold;'>" + jsonObj.snippet.title + "</span><br/>");
+					//$(".status").append("<img src=" + jsonObj.snippet.thumbnails.high.url + "></img>" + "<br/><br/>");
+					
+				});
+			
+			} catch(e) {
+				//$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + e.name + " " + e.message + "<br/>");
+			}
+			
+			*/
+			
+		}
+		
+		/*
 		function currentPlayList() {
 			
 			var requestOptions;
@@ -441,7 +436,9 @@ var _VideoMapPic;
 			});
 			
 		}
+		*/
 		
+		/*
 		function checkAddedSong() {
 			
 			var requestOptions;
@@ -472,7 +469,9 @@ var _VideoMapPic;
 			});
 			
 		}
+		*/
 		
+		/*
 		function UpdateAddingSongs() {
 			
 			$.each(_AddedVideoId, function(indexK, itemX) {
@@ -485,6 +484,7 @@ var _VideoMapPic;
 			});
 			
 		}
+		*/
 		
 		$("#deleteall-button").click(function(e){
 			
@@ -526,9 +526,9 @@ var _VideoMapPic;
 			
 			$('.error').empty();
 			
-			try {
+			for(var i = 0; i < arrDeleteIds.length; i++) {
 				
-				for(var i = 0; i < arrDeleteIds.length; i++) {
+				try {
 					
 					requestOptions = {
 						id: arrDeleteIds[i]
@@ -540,11 +540,10 @@ var _VideoMapPic;
 						$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + arrDeleteIds[i] + " " + JSON.stringify(response) + "<br/>");
 					});
 					
+ 				} catch(e) {
+					$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + e.name + " " + e.message + "<br/>");
 				}
 				
-			}
-			catch(e) {
-				$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + e.name + " " + e.message + "<br/>");
 			}
 			
 		}
