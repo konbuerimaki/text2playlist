@@ -6,15 +6,40 @@
 		<title>jive motion tokyo script &omega; version</title>
 	</head>
 	<body>
-		<h1>jive motion tokyo script &omega; version</h1>
+		<h1><a href="http://jivemotion.jp/" target="_blank">jive motion</a> script &omega; version</h1>
 		<div style="margin-bottom:2em;">
-			it needs google api authentication setting and get key code before running.
-			please contact iguchaaarn[at]gmail.com how to use this script.
-			button from No.1 to 3 is working.
+			this script read playlist text file and make it into youtube playlist.<br/>
+			when you have hundreds of song and singer name listed text and want them into the playlist, this script will be your help.<br/>
+			<br/>
+			you need to have your web server, google account and some experience about www and FTP.<br/>
+			<br/>
+			<br/>
+			1. download source codes from github <a href="https://github.com/konbuerimaki/text2playlist" target="_blank">https://github.com/konbuerimaki/text2playlist</a>.<br/>
+			2. log in google with your acccount. <br/>
+			3. open google developer console. <a href="https://console.developers.google.com/" target="_blank">https://console.developers.google.com/</a><br/>
+			4. create OAuth2.0 client ID in API Manager. choose "web application".<br/>
+			5. IMPORTANT! specify your web server URL in "authorized JavaScript origins".<br/>
+			6. no need to specify "authorized redirect URIs".<br/>
+			7. copy client ID and paste it in modernjiveplaylisting.js.<br/>
+			8. location to copy is a line 28 "clientId".<br/>
+			9. paste your playlist text file URL at a line 49 "_URL".<br/>
+			10. create a blank youtube playlist.<br/>
+			11. paste that playlist id(you can find it in a playlist url) at a line 50 "_playlist_id".<br/>
+			12. upload updated source codes to your own web server.<br/>
+			13. open a index.html on the browser which logged in google account that you made this client Id. buttons are activated if OAuth2.0 is working.<br/>
+			<br/>
+			now it shuold work. <br/>
+			<br/>
+			<br/>
+			for security, after you made a playlist. it would be good to delete your API client id.<br/>
+			read about your API Key security. <a href="https://support.google.com/googleapi/answer/6310037?hl=en&ref_topic=7013279" target="_blank">https://support.google.com/googleapi/answer/6310037?hl=en&ref_topic=7013279</a>
+			<br/>
+			<br/>
+			code for <a href="http://jivemotion.jp/" target="_blank" style="font-weight:bold; font-size:x-large;">http://jivemotion.jp/</a>
+			<br/>
 		</div>
 		<div class="textplaylistname" style="margin-bottom:1em;">(selected text file...)</div>
 		<div class="youtubeplaylistname" style="margin-bottom:1em;">(selected youtube playlist...)</div>
-		
 		<div style="margin-bottom:1em;">
 			<button id="playlist-button"      disabled style="cursor:pointer;">1. Get Playlist text file data</button>
 			<button id="searchsong-button"    disabled style="cursor:pointer;">2. search Songs from youtube</button>

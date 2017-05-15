@@ -25,7 +25,7 @@ function initClient() {
 	gapi.client.init({
 		apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
 		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
-		clientId: '681391917174-t1ruo3j36g1nbjthpalgn484rspfqbl5.apps.googleusercontent.com',
+		clientId: '- YOUR CLIENT ID -.apps.googleusercontent.com',
 		scope: 'https://www.googleapis.com/auth/youtube'
 	}).then(function () {
 		// Listen for sign-in state changes.
@@ -43,11 +43,11 @@ function updateSigninStatus(isSignedIn) {
 	}
 }
 var _URL = "";
-var _playlist_id = "";
+var _PLAYLIST_ID = "";
 
 _URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo.txt";
 _URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo_60.txt";
-_playlist_id = "PLsOsWUE7opcDL7XfJjEKZrqaPnEOpWbVs";
+_PLAYLIST_ID = "PLsOsWUE7opcDL7XfJjEKZrqaPnEOpWbVs";
 
 var _ArraySongs = [];
 var _ArrVideoId = []; 
@@ -116,7 +116,7 @@ var _VideoMapPic;
 			var requestOptions;
 			
 			requestOptions = {
-				id: _playlist_id,
+				id: _PLAYLIST_ID,
 				part: 'snippet'
 			};
 			
@@ -266,10 +266,9 @@ var _VideoMapPic;
 				return gapi.client.request({
 					'path':'youtube/v3/videos',
 					'params':{
-								"part":"statistics",
-								"id": vid
-							}
-						
+						"part":"statistics",
+						"id": vid
+					}
 				});
 				
 			}
@@ -320,8 +319,8 @@ var _VideoMapPic;
 				alert("all item added.");
 			}
 			else {
-				//AddSongPlaylist(_ArrVideoId, _playlist_id);
-				AddSong(_ArrVideoId, 0, _playlist_id) 
+				//AddSongPlaylist(_ArrVideoId, _PLAYLIST_ID);
+				AddSong(_ArrVideoId, 0, _PLAYLIST_ID) 
 			}
 		});
 		
@@ -355,7 +354,7 @@ var _VideoMapPic;
 				}
 				
 			}, function(reason) {
-				$(".error").append("[" + moment().add(9, "h").toISOString() + "][" + addingVideoIds[i] + "]" + reason.statusText + "<br/>");
+				$(".error").append("[" + moment().add(9, "h").toISOString() + "][" + addingVideoIds[idx] + "]" + reason.statusText + "<br/>");
 				if (idx < addingVideoIds.length) {
 					AddSong(addingVideoIds, ++idx, addingPlaylist_id);
 				} else {
@@ -406,7 +405,7 @@ var _VideoMapPic;
 			var requestOptions;
 			
 			requestOptions = {
-				playlistId: _playlist_id,
+				playlistId: _PLAYLIST_ID,
 				part: 'snippet'
 			};
 			
@@ -448,7 +447,7 @@ var _VideoMapPic;
 			$.each(_ArrVideoId, function(indexJ, itemY) {
 				
 				requestOptions = {
-					playlistId: _playlist_id,
+					playlistId: _PLAYLIST_ID,
 					part: 'snippet',
 					videoId: _ArrVideoId[indexJ]
 				};
@@ -488,63 +487,106 @@ var _VideoMapPic;
 		
 		$("#deleteall-button").click(function(e){
 			
-			var arrDeleteIds = []; 
-			var requestOptions;
-			
-			requestOptions = {
-				playlistId: _playlist_id,
-				part: 'snippet'
-			};
-			
-			var request = gapi.client.youtube.playlistItems.list(requestOptions);
-			request.execute(function(response) {
-		    	
-		    	//$('.check').empty().append(response.result.pageInfo.totalResults + "<br/>");
-		    	
-				var playlistItems = response.result.items;
+			gapi.client.request({
 				
-				if (playlistItems) {
-					
-					$.each(playlistItems, function(index, item) {
-						arrDeleteIds.push(item.id);
-					});
-					
-					DoDeleteAll(arrDeleteIds);
-					
-				} else {
-					//$('.check').append('Sorry you have no item -> ' + vid + "<br/>");
+				'path':'/youtube/v3/playlistItems',
+				'params':{
+					"part":"snippet",
+					"maxresults": "1",
+					"playlistId": _PLAYLIST_ID
 				}
 				
+			}).then(function(response) {
+				
+				$('.error').empty();
+				DoDeleteAll(0, response.result.pageInfo.totalResults);
+				
+			}, function(reason) {
+				$(".error").append("[" + moment().add(9, "h").toISOString() + "]" + reason.statusText + "<br/>");
 			});
 			
 		});
 		
-		function DoDeleteAll(arrDeleteIds) {
+		function DoDeleteAll(idx, idxDeleteIds) {
 			
-			var request;
-			var requestOptions;
-			
-			$('.error').empty();
-			
-			for(var i = 0; i < arrDeleteIds.length; i++) {
+			var deletePlaylistItemId; 
+			var deleteRequest;
+			var batch;
+		
+			gapi.client.request({
 				
-				try {
-					
-					requestOptions = {
-						id: arrDeleteIds[i]
-					};
-					
-					request = gapi.client.youtube.playlistItems.delete(requestOptions);
-					
-					request.execute(function(response) {
-						$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + arrDeleteIds[i] + " " + JSON.stringify(response) + "<br/>");
-					});
-					
- 				} catch(e) {
-					$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + e.name + " " + e.message + "<br/>");
+				'path':'/youtube/v3/playlistItems',
+				'params':{
+					"part":"snippet",
+					"maxresults": "50",
+					"playlistId": _PLAYLIST_ID
 				}
 				
-			}
+			}).then(function(response) {
+				
+				batch = gapi.client.newBatch();
+				
+				for(i = 0; i < 5; i++) {
+					
+					try {
+						deletePlaylistItemId = response.result.items[i].id;
+					} catch (e) {
+					}
+					
+					deleteRequest = function() {
+						
+						return gapi.client.request({
+							'path':'youtube/v3/playlistItems',
+							'method':'DELETE',
+							'params':{
+								"id": deletePlaylistItemId
+							}
+						});
+						
+					}
+					
+					batch.add(deleteRequest());
+				
+				}
+				
+				batch.then(function(response) {
+					
+					//$(".error").append("[" + moment().add(9, "h").toISOString() + "] DELETED [" + response.status + "] " + response.statusText + "<br/>");
+					
+					gapi.client.request({
+						
+						'path':'/youtube/v3/playlistItems',
+						'params':{
+							"part":"snippet",
+							"maxresults": "1",
+							"playlistId": _PLAYLIST_ID
+						}
+						
+					}).then(function(response) {
+						
+						$(".error").append("[" + moment().add(9, "h").toISOString() + "] [totalResults] " + response.result.pageInfo.totalResults + "<br/>");
+						
+						if(response.result.pageInfo.totalResults == 0) {
+							$(".error").append("[" + moment().add(9, "h").toISOString() + "] All playlist items were deleted.<br/>");
+							return false;
+						}
+						else {
+							DoDeleteAll(0, response.result.pageInfo.totalResults);
+						}
+						
+					}, function(reason) {
+						return false;
+					});
+					
+				}, function(reason) {
+					
+					return false;
+					
+				});
+				
+			}, function(reason) {
+				$(".error").append("[" + moment().add(9, "h").toISOString() + "]" + reason.status + " " + reason.statusText + "<br/>");
+			});
 			
 		}
 		
