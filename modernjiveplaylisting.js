@@ -25,7 +25,7 @@ function initClient() {
 	gapi.client.init({
 		apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
 		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
-		clientId: '- YOUR CLIENT ID -.apps.googleusercontent.com',
+		clientId: 'YOUR_CLIENT_ID',
 		scope: 'https://www.googleapis.com/auth/youtube'
 	}).then(function () {
 		// Listen for sign-in state changes.
@@ -45,8 +45,7 @@ function updateSigninStatus(isSignedIn) {
 var _URL = "";
 var _PLAYLIST_ID = "";
 
-_URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo.txt";
-_URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo_60.txt";
+_URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo_10.txt";
 _PLAYLIST_ID = "PLsOsWUE7opcDL7XfJjEKZrqaPnEOpWbVs";
 
 var _ArraySongs = [];
@@ -258,7 +257,8 @@ var _VideoMapPic;
 		$("#checkPlayList-button").click(function(e){
 			
 			//currentPlayList();
-
+			_ArrVideoId.reverse();
+			
 			var batch = gapi.client.newBatch();
 			
 			var statRequest = function(vid) {
@@ -320,6 +320,7 @@ var _VideoMapPic;
 			}
 			else {
 				//AddSongPlaylist(_ArrVideoId, _PLAYLIST_ID);
+				_ArrVideoId.reverse();
 				AddSong(_ArrVideoId, 0, _PLAYLIST_ID) 
 			}
 		});
