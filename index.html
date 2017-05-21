@@ -38,6 +38,26 @@
 			code for <a href="http://jivemotion.jp/" target="_blank" style="font-weight:bold; font-size:x-large;">http://jivemotion.jp/</a>
 			<br/>
 		</div>
+		<form class="information">
+			<table>
+				<tbody>
+					<tr>
+						<td>google api client id: </td>
+						<td><input type="text" id="clientid" name="clientid"></td>
+					</tr>
+					<tr>
+						<td>youtube playlist id: </td>
+						<td><input type="text" id="playlistid" name="playlistid"></td>
+					</tr>
+					<tr>
+						<td valign="top">song titles:</td>
+						<td><textarea id="playlistinput" name="playlistinput" rows="4" cols="50"></textarea></td>
+					</tr>
+				<tbody>
+			</table>
+			
+		</form>
+		<br/>
 		<div class="textplaylistname" style="margin-bottom:1em;">(selected text file...)</div>
 		<div class="youtubeplaylistname" style="margin-bottom:1em;">(selected youtube playlist...)</div>
 		<div style="margin-bottom:1em;">
@@ -81,9 +101,14 @@
 		
 		<script type="text/javascript" src="./moment-with-locales.min.js"></script>
 		<script type="text/javascript" src="./modernjiveplaylisting.js"></script>
-		
+		<!--
 		<script async defer src="https://apis.google.com/js/api.js"
 			onload="this.onload=function(){};handleClientLoad()"
+			onreadystatechange="if (this.readyState === 'complete') this.onload()">
+		</script>
+		-->
+		<script async defer src="https://apis.google.com/js/api.js"
+			onload="this.onload=function(){};"
 			onreadystatechange="if (this.readyState === 'complete') this.onload()">
 		</script>
 		
@@ -93,7 +118,7 @@
 				<button id="prev-button" class="paging-button" onclick="previousPage();">Previous Page</button>
 				<button id="next-button" class="paging-button" onclick="nextPage();">Next Page</button>
 			</div>
-		
+			
 			<div id="buttons">
 				<label>
 					<input id="query" value='cats' type="text"/>

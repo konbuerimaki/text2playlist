@@ -1,16 +1,15 @@
-// After the API loads, call a function to get the uploads playlist ID.
-function handleAPILoadedSearch() {
 
-	// After the API loads, call a function to enable the search box.
-	
-	$('#playlist-button').attr('disabled', false);
-	$('#searchsong-button').attr('disabled', false);
-	$('#checkPlayList-button').attr('disabled', false);
-	$('#addPlayList-button').attr('disabled', false);
-	$('#deleteall-button').attr('disabled', false);
-	//$('#search-button').attr('disabled', false);
-	
-}
+var _URL = "";
+var _PLAYLIST_ID = "";
+
+//_URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo_10.txt";
+
+var _ArraySongs = [];
+var _ArrVideoId = []; 
+var errCount = 0;
+var _AddedVideoId = []; 
+var _VideoMap;
+var _VideoMapPic;
 
 function handleClientLoad() {
 	// Loads the client library and the auth2 library together for efficiency.
@@ -20,12 +19,15 @@ function handleClientLoad() {
 }
 
 function initClient() {
+	
+	var cid = $("#clientid").val();
+	
 	// Initialize the client with API key and People API, and initialize OAuth with an
 	// OAuth 2.0 client ID and scopes (space delimited string) to request access.
 	gapi.client.init({
-		apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
+		//apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
 		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
-		clientId: 'YOUR_CLIENT_ID',
+		clientId: cid,
 		scope: 'https://www.googleapis.com/auth/youtube'
 	}).then(function () {
 		// Listen for sign-in state changes.
@@ -42,18 +44,20 @@ function updateSigninStatus(isSignedIn) {
 		handleAPILoadedSearch();
 	}
 }
-var _URL = "";
-var _PLAYLIST_ID = "";
 
-_URL = "http://sirokurocya.sakura.ne.jp/development/modernjivescript/PlaylistDemo_10.txt";
-_PLAYLIST_ID = "PLsOsWUE7opcDL7XfJjEKZrqaPnEOpWbVs";
+// After the API loads, call a function to get the uploads playlist ID.
+function handleAPILoadedSearch() {
 
-var _ArraySongs = [];
-var _ArrVideoId = []; 
-var errCount = 0;
-var _AddedVideoId = []; 
-var _VideoMap;
-var _VideoMapPic;
+	// After the API loads, call a function to enable the search box.
+	
+	//$('#playlist-button').attr('disabled', false);
+	$('#searchsong-button').attr('disabled', false);
+	$('#checkPlayList-button').attr('disabled', false);
+	$('#addPlayList-button').attr('disabled', false);
+	$('#deleteall-button').attr('disabled', false);
+	//$('#search-button').attr('disabled', false);
+	
+}
 
 (function($){
 	
@@ -62,7 +66,11 @@ var _VideoMapPic;
 		var evtRow = "<div>datetime: " + moment().add(9, "h").toISOString() + "</div>";
 		$(".post-auth").empty().append(evtRow);
 		
+		$('#playlist-button').attr('disabled', false);
+		
 		$("#playlist-button").click(function(e){
+			
+			handleClientLoad();
 			
 			$(".textplaylistname").empty().append("(selected text file...)");
 			$(".youtubeplaylistname").empty().append("(selected youtube playlist...)");
@@ -71,6 +79,39 @@ var _VideoMapPic;
 			$(".status").empty();
 			$(".check").empty();
 			$(".result").empty();
+			
+			var txtSongTitles = $("#playlistinput").val();
+			_ArraySongs = txtSongTitles.split("\n");
+			
+			var song = "";
+			var idx = 0;
+			var counter = 0;
+			
+			for(var i = 0; i < _ArraySongs.length; i++) {
+				
+				song = _ArraySongs[i].trim();
+				idx = song.lastIndexOf(" ");
+				
+				if (idx > 0) {
+					
+					song = song.substring(0, idx - 1);
+					$(".root").append(song + "<br/>");
+					
+				} 
+				else {
+					
+					$(".root").append("N/A<br/>");
+					
+				}
+				
+				counter = counter + 1;
+				
+			}
+			
+			$(".root").append("<div style='font-weight:bold; margin-top:1em;'>number of data item: " + counter + "</div><br/>");
+			
+			
+			/*
 			
 			$.ajax({
 				
@@ -112,10 +153,15 @@ var _VideoMapPic;
 				
 			});
 			
+			*/
+			
+			/*
+			var pid = $("#playlistid").val();
+			
 			var requestOptions;
 			
 			requestOptions = {
-				id: _PLAYLIST_ID,
+				id: pid,
 				part: 'snippet'
 			};
 			
@@ -139,10 +185,25 @@ var _VideoMapPic;
 				}
 				
 			});
+			*/
 			
 		});
 		
 		$("#searchsong-button").click(function(e){
+			
+			var pid = $("#playlistid").val();
+			
+			gapi.client.request({
+				'path':'/youtube/v3/playlists',
+				'params':{
+							'part': 'snippet',
+							'id': pid
+						}
+			}).then(function(response) {
+				$('.youtubeplaylistname').empty().append("[target youtube playlist name] <span style='font-weight:bold;'>" + response.result.items[0].snippet.title + "</span>");
+			}, function(reason) {
+				$(".error").append("[" + moment().add(9, "h").toISOString() + "] " + reason.statusText + "<br/>");
+			});
 			
 			$(".result").empty();
 			
@@ -315,13 +376,15 @@ var _VideoMapPic;
 		
 		$("#addPlayList-button").click(function(e){
 			
+			var pid = $("#playlistid").val();
+			
 			if (errCount >= _ArrVideoId.length) {
 				alert("all item added.");
 			}
 			else {
 				//AddSongPlaylist(_ArrVideoId, _PLAYLIST_ID);
 				_ArrVideoId.reverse();
-				AddSong(_ArrVideoId, 0, _PLAYLIST_ID) 
+				AddSong(_ArrVideoId, 0, pid) 
 			}
 		});
 		
@@ -488,13 +551,15 @@ var _VideoMapPic;
 		
 		$("#deleteall-button").click(function(e){
 			
+			var pid = $("#playlistid").val();
+			
 			gapi.client.request({
 				
 				'path':'/youtube/v3/playlistItems',
 				'params':{
 					"part":"snippet",
 					"maxresults": "1",
-					"playlistId": _PLAYLIST_ID
+					"playlistId": pid
 				}
 				
 			}).then(function(response) {
@@ -513,14 +578,16 @@ var _VideoMapPic;
 			var deletePlaylistItemId; 
 			var deleteRequest;
 			var batch;
-		
+			
+			var pid = $("#playlistid").val();
+			
 			gapi.client.request({
 				
 				'path':'/youtube/v3/playlistItems',
 				'params':{
 					"part":"snippet",
 					"maxresults": "50",
-					"playlistId": _PLAYLIST_ID
+					"playlistId": pid
 				}
 				
 			}).then(function(response) {
@@ -554,13 +621,15 @@ var _VideoMapPic;
 					
 					//$(".error").append("[" + moment().add(9, "h").toISOString() + "] DELETED [" + response.status + "] " + response.statusText + "<br/>");
 					
+					var pid = $("#playlistid").val();
+					
 					gapi.client.request({
 						
 						'path':'/youtube/v3/playlistItems',
 						'params':{
 							"part":"snippet",
 							"maxresults": "1",
-							"playlistId": _PLAYLIST_ID
+							"playlistId": pid
 						}
 						
 					}).then(function(response) {
