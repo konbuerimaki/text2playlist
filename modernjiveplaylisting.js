@@ -409,7 +409,7 @@ function handleAPILoadedSearch() {
 				
 				jsonObj = response.result;
 				
-				$(".status").append("<span style='font-weight:bold;'>" + jsonObj.snippet.title + "</span><br/>");
+				$(".status").append("<span style='font-weight:bold;'>[" + idx + "]" + jsonObj.snippet.title + "</span><br/>");
 				
 				if (idx < addingVideoIds.length) {
 					AddSong(addingVideoIds, ++idx, addingPlaylist_id);
