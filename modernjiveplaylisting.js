@@ -220,6 +220,8 @@ function handleAPILoadedSearch() {
 			var tag;
 			var player;
 			
+			_ArrVideoId = [];
+			
 			for(var i = 0; i < _ArraySongs.length; i++) {
 				
 				song = _ArraySongs[i].trim();
