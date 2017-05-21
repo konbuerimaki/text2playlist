@@ -8,31 +8,50 @@
 	<body>
 		<h1><a href="http://jivemotion.jp/" target="_blank">jive motion</a> script &omega; version</h1>
 		<div style="margin-bottom:2em;">
-			this script read playlist text file and make it into youtube playlist.<br/>
-			when you have hundreds of song and singer name listed text and want them into the playlist, this script will be your help.<br/>
+			This script reads playlist typed in textarea and make it into your youtube playlist.<br/>
+			When you have hundreds of titles and want them into the playlist, this script will help it.<br/>
 			<br/>
-			you need to have your web server, google account and some experience about www and FTP.<br/>
+			you need your web server, google account and some experience about www.<br/>
 			<br/>
 			<br/>
+			<span style="font-weight:bold;">preparation:</span><br/><br/>
 			1. download source codes from github <a href="https://github.com/konbuerimaki/text2playlist" target="_blank">https://github.com/konbuerimaki/text2playlist</a>.<br/>
-			2. log in google with your acccount. <br/>
-			3. open google developer console. <a href="https://console.developers.google.com/" target="_blank">https://console.developers.google.com/</a><br/>
-			4. create OAuth2.0 client ID in API Manager. choose "web application".<br/>
-			5. IMPORTANT! specify your web server URL in "authorized JavaScript origins".<br/>
-			6. no need to specify "authorized redirect URIs".<br/>
-			7. copy client ID and paste it in modernjiveplaylisting.js.<br/>
-			8. location to copy is a line 28 "clientId".<br/>
-			9. paste your playlist text file URL at a line 49 "_URL".<br/>
-			10. create a blank youtube playlist.<br/>
-			11. paste that playlist id(you can find it in a playlist url) at a line 50 "_playlist_id".<br/>
-			12. upload updated source codes to your own web server.<br/>
-			13. open a index.html on the browser which logged in google account that you made this client Id. buttons are activated if OAuth2.0 is working.<br/>
+			2. upload that files to your www any directory.<br/>
+			3. test to open that page.<br/>
 			<br/>
-			now it shuold work. <br/>
+			<span style="font-weight:bold;">google account:</span><br/><br/>
+			4. open google developer console. <a href="https://console.developers.google.com/" target="_blank">https://console.developers.google.com/</a><br/>
+			5. create OAuth2.0 client ID in API Manager. in the OAuth page, choose "web application".<br/>
+			6. IMPORTANT! specify your web server URL in "authorized JavaScript origins".<br/>
+			7. You do not have to specify "authorized redirect URIs".<br/>
+			8. Copy client id and paste it client id textbox.<br/>
+			<br/>
+			<span style="font-weight:bold;">youtube:</span><br/><br/>
+			9. Then, open a youtube with logged in your google id.<br/>
+			10. In youtube, create a youtube playlist.<br/>
+			11. Copy the playlist id(you can find it in a playlist url) and paste that id to the playlist id textbox.<br/>
+			<br/>
+			now it shuold work.<br/>
 			<br/>
 			<br/>
-			for security, after you made a playlist. it would be good to delete your API client id.<br/>
-			read about your API Key security. <a href="https://support.google.com/googleapi/answer/6310037?hl=en&ref_topic=7013279" target="_blank">https://support.google.com/googleapi/answer/6310037?hl=en&ref_topic=7013279</a>
+			1. Load playlist text<br/>
+			<br/>
+			it reads titles in textarea. one line, one search text string.
+			<br/>
+			<br/>
+			2. search titles in youtube<br/>
+			<br/>
+			it searchs titles in youtube. this result is used for making a playlist.
+			<br/>
+			<br/>
+			3. check song's view count<br/>
+			<br/>
+			you can check view count. copy and paste this result in spreadsheet and filter top ranking.
+			<br/>
+			<br/>
+			4. Add a song to youtube playlist<br/>
+			<br/>
+			to click this button, it adds search result in the youtube playlist which you created.
 			<br/>
 			<br/>
 			code for <a href="http://jivemotion.jp/" target="_blank" style="font-weight:bold; font-size:x-large;">http://jivemotion.jp/</a>
@@ -61,8 +80,8 @@
 		<div class="textplaylistname" style="margin-bottom:1em;">(selected text file...)</div>
 		<div class="youtubeplaylistname" style="margin-bottom:1em;">(selected youtube playlist...)</div>
 		<div style="margin-bottom:1em;">
-			<button id="playlist-button"      disabled style="cursor:pointer;">1. Get Playlist text file data</button>
-			<button id="searchsong-button"    disabled style="cursor:pointer;">2. search Songs from youtube</button>
+			<button id="playlist-button"      disabled style="cursor:pointer;">1. Load playlist text</button>
+			<button id="searchsong-button"    disabled style="cursor:pointer;">2. search titles in youtube</button>
 			<button id="checkPlayList-button" disabled style="cursor:pointer;">3. check song's view count</button>
 			<button id="addPlayList-button"   disabled style="cursor:pointer;">4. Add a song to youtube playlist</button>
 			<button id="deleteall-button" disabled style="cursor:pointer;">delete all</button>
