@@ -6,6 +6,7 @@ var _PLAYLIST_ID = "";
 
 var _ArraySongs = [];
 var _ArrVideoId = []; 
+var _DelArrVideoId = []; 
 var errCount = 0;
 var _AddedVideoId = []; 
 var _VideoMap;
@@ -25,7 +26,7 @@ function initClient() {
 	// Initialize the client with API key and People API, and initialize OAuth with an
 	// OAuth 2.0 client ID and scopes (space delimited string) to request access.
 	gapi.client.init({
-		//apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
+		apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
 		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
 		clientId: cid,
 		scope: 'https://www.googleapis.com/auth/youtube'
@@ -34,12 +35,17 @@ function initClient() {
 		gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
 		// Handle the initial sign-in state.
 		updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+	}, function(error){
+		
+		alert(error.message);
+		
 	});
 }
 
 function updateSigninStatus(isSignedIn) {
 	// When signin status changes, this function is called.
 	// If the signin status is changed to signedIn, we make an API call.
+	
 	if (isSignedIn) {
 		handleAPILoadedSearch();
 	}
@@ -90,19 +96,18 @@ function handleAPILoadedSearch() {
 			for(var i = 0; i < _ArraySongs.length; i++) {
 				
 				song = _ArraySongs[i].trim();
+				$(".root").append(song + "<br/>");
+				/*
 				idx = song.lastIndexOf(" ");
 				
 				if (idx > 0) {
-					
 					song = song.substring(0, idx - 1);
 					$(".root").append(song + "<br/>");
-					
 				} 
 				else {
-					
 					$(".root").append("N/A<br/>");
-					
 				}
+				*/
 				
 				counter = counter + 1;
 				
@@ -317,11 +322,86 @@ function handleAPILoadedSearch() {
 			
 		});
 		
+		function getStatistics(count, max) {
+			
+			vid = _ArrVideoId[count];
+			
+			gapi.client.request({
+				
+				'path':'youtube/v3/videos',
+				'params':{
+					"part":"statistics",
+					"id": vid
+				}
+				
+			}).then(function(response) {
+				
+				$(".result").append("<tr>");
+				$(".result").append("<td style='margin-right:1em;'>" + _VideoMapPic.get(response.result.items[0].id) + "</td>");
+				$(".result").append("<td style='margin-right:1em;'>[" + response.result.items[0].id + "]</td>");
+				$(".result").append("<td style='margin-right:1em; font-weight:bold;'>" + _VideoMap.get(response.result.items[0].id) + "</td>");
+				$(".result").append("<td style='text-align:right; margin-left:1em;'>" + response.result.items[0].statistics.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</span></td>");
+				$(".result").append("</tr>");
+				
+				count = count + 1;
+				if (count <= (max - 1)) {
+					getStatistics(count, max);
+				} 
+				else {
+					
+				}
+				
+			});
+			
+		}
+		
 		$("#checkPlayList-button").click(function(e){
 			
-			//currentPlayList();
-			_ArrVideoId.reverse();
+			$(".result").empty();
+
+			$(".result").append("<br/>");
+			$(".result").append("<br/>");
+			$(".result").append("<table>");
+			$(".result").append("<tbody>");
 			
+			var count = 0;
+			getStatistics(count, _ArrVideoId.length);
+			
+			/*
+			for(var i = 0; i < _ArrVideoId.length; i++) {
+				
+				vid = _ArrVideoId[i];
+				
+				gapi.client.request({
+					
+					'path':'youtube/v3/videos',
+					'params':{
+						"part":"statistics",
+						"id": vid
+					}
+					
+				}).then(function(response) {
+					
+					try {
+						
+						$(".result").append("<tr>");
+						$(".result").append("<td style='margin-right:1em;'>" + _VideoMapPic.get(response.result.items[i].id) + "</td>");
+						$(".result").append("<td style='margin-right:1em;'>[" + response.result.items[i].id + "]</td>");
+						$(".result").append("<td style='margin-right:1em; font-weight:bold;'>" + _VideoMap.get(response.result.items[i].id) + "</td>");
+						$(".result").append("<td style='text-align:right; margin-left:1em;'>" + response.result.items[i].statistics.viewCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</span></td>");
+						$(".result").append("</tr>");
+						
+					} catch(e) {
+						alert(e.message);
+					}
+					
+				});
+				
+			}
+			
+			*/
+			
+			/*
 			var batch = gapi.client.newBatch();
 			
 			var statRequest = function(vid) {
@@ -341,12 +421,8 @@ function handleAPILoadedSearch() {
 				batch.add(statRequest(_ArrVideoId[i]));
 			}
 			
-			$(".result").append("<br/>");
-			$(".result").append("<br/>");
 			
 			batch.then(function(response) {
-				
-				$(".result").empty();
 				
 				$(".result").append("<table>");
 				$(".result").append("<tbody>");
@@ -364,15 +440,26 @@ function handleAPILoadedSearch() {
 					}
 				});
 				
-				$(".result").append("</tbody>");
-				$(".result").append("</table>");
+				//for (i = 0; i < response.result.length; i++) {
+				//	$(".result").append("[" + response.result[i].result.items[0].id + "] " + response.result[i].result.items[0].statistics.viewCount + "<br/>");
+				//}
 				
-				/*
-				for (i = 0; i < response.result.length; i++) {
-					$(".result").append("[" + response.result[i].result.items[0].id + "] " + response.result[i].result.items[0].statistics.viewCount + "<br/>");
+			}, function(reason) {
+				
+				try {
+					$(".result").append("<tr>");
+					$(".result").append("<td style='margin-right:1em;'>[" + reason.body + "]</td>");
+					$(".result").append("</tr>");
+				} catch(e) {
+					
 				}
-				*/
+				
 			});
+			
+			*/
+			
+			$(".result").append("</tbody>");
+			$(".result").append("</table>");
 			
 		});
 		
@@ -553,6 +640,9 @@ function handleAPILoadedSearch() {
 		
 		$("#deleteall-button").click(function(e){
 			
+			$('.error').empty();
+			_DelArrVideoId = []; 
+			
 			var pid = $("#playlistid").val();
 			
 			gapi.client.request({
@@ -566,98 +656,53 @@ function handleAPILoadedSearch() {
 				
 			}).then(function(response) {
 				
-				$('.error').empty();
-				DoDeleteAll(0, response.result.pageInfo.totalResults);
+				for (i = 0; i < response.result.items.length; i++) {
+					_DelArrVideoId.push(response.result.items[i].snippet.resourceId.videoId);
+				}
 				
-			}, function(reason) {
-				$(".error").append("[" + moment().add(9, "h").toISOString() + "]" + reason.statusText + "<br/>");
+				$('#execDeleteAll-button').attr('disabled', false);
 			});
 			
 		});
 		
+		$("#execDeleteAll-button").click(function(e){
+			
+			handleClientLoad();
+			
+			$('.error').empty();
+			
+			DoDeleteAll(0, _DelArrVideoId.length);
+			
+		});
+		
+		
 		function DoDeleteAll(idx, idxDeleteIds) {
 			
-			var deletePlaylistItemId; 
-			var deleteRequest;
-			var batch;
-			
 			var pid = $("#playlistid").val();
+			var pos = idx;
+			var vid = _DelArrVideoId[pos];
 			
 			gapi.client.request({
 				
-				'path':'/youtube/v3/playlistItems',
+				'path':'youtube/v3/playlistItems',
+				'method':'DELETE',
 				'params':{
-					"part":"snippet",
-					"maxresults": "50",
-					"playlistId": pid
+					"id": vid
 				}
 				
 			}).then(function(response) {
 				
-				batch = gapi.client.newBatch();
-				
-				for(i = 0; i < 5; i++) {
-					
-					try {
-						deletePlaylistItemId = response.result.items[i].id;
-					} catch (e) {
-					}
-					
-					deleteRequest = function() {
-						
-						return gapi.client.request({
-							'path':'youtube/v3/playlistItems',
-							'method':'DELETE',
-							'params':{
-								"id": deletePlaylistItemId
-							}
-						});
-						
-					}
-					
-					batch.add(deleteRequest());
-				
+				if (pos < idxDeleteIds) {
+					pos = pos + 1;
+					DoDeleteAll(pos, idxDeleteIds);
+				}
+				else {
+					$(".status").append("[" + moment().add(9, "h").toISOString() + "] ALL DELETED");
+					return false;
 				}
 				
-				batch.then(function(response) {
-					
-					//$(".error").append("[" + moment().add(9, "h").toISOString() + "] DELETED [" + response.status + "] " + response.statusText + "<br/>");
-					
-					var pid = $("#playlistid").val();
-					
-					gapi.client.request({
-						
-						'path':'/youtube/v3/playlistItems',
-						'params':{
-							"part":"snippet",
-							"maxresults": "1",
-							"playlistId": pid
-						}
-						
-					}).then(function(response) {
-						
-						$(".error").append("[" + moment().add(9, "h").toISOString() + "] [totalResults] " + response.result.pageInfo.totalResults + "<br/>");
-						
-						if(response.result.pageInfo.totalResults == 0) {
-							$(".error").append("[" + moment().add(9, "h").toISOString() + "] All playlist items were deleted.<br/>");
-							return false;
-						}
-						else {
-							DoDeleteAll(0, response.result.pageInfo.totalResults);
-						}
-						
-					}, function(reason) {
-						return false;
-					});
-					
-				}, function(reason) {
-					
-					return false;
-					
-				});
-				
 			}, function(reason) {
-				$(".error").append("[" + moment().add(9, "h").toISOString() + "]" + reason.status + " " + reason.statusText + "<br/>");
+				$(".error").append("[" + moment().add(9, "h").toISOString() + "] " + reason.statusText);
 			});
 			
 		}
