@@ -62,11 +62,11 @@
 				<tbody>
 					<tr>
 						<td>google api client id: </td>
-						<td><input type="text" id="clientid" name="clientid"></td>
+						<td><input type="text" id="clientid" name="clientid"><span style="font-weight:bold; color:red;"><- required</span></td>
 					</tr>
 					<tr>
 						<td>youtube playlist id: </td>
-						<td><input type="text" id="playlistid" name="playlistid"></td>
+						<td><input type="text" id="playlistid" name="playlistid"><span style="font-weight:bold; color:red;"><- required</span></td>
 					</tr>
 					<tr>
 						<td valign="top">song titles:</td>
@@ -80,11 +80,12 @@
 		<div class="textplaylistname" style="margin-bottom:1em;">(selected text file...)</div>
 		<div class="youtubeplaylistname" style="margin-bottom:1em;">(selected youtube playlist...)</div>
 		<div style="margin-bottom:1em;">
-			<button id="playlist-button"      disabled style="cursor:pointer;">1. Load playlist text</button>
+			<button id="logon-button"         style="cursor:pointer;">0. OAuth logon</button>
+			<button id="playlist-button"      style="cursor:pointer;">1. Load playlist text</button>
 			<button id="searchsong-button"    disabled style="cursor:pointer;">2. search titles in youtube</button>
 			<button id="checkPlayList-button" disabled style="cursor:pointer;">3. check song's view count</button>
 			<button id="addPlayList-button"   disabled style="cursor:pointer;">4. Add a song to youtube playlist</button>
-			<button id="deleteall-button" disabled style="cursor:pointer;">delete all</button>
+			<button id="deleteall-button"     disabled style="cursor:pointer;">delete all</button>
 			<button id="execDeleteAll-button" disabled style="cursor:pointer;">delete all execute</button>
 			
 		</div>
@@ -119,8 +120,6 @@
 		<script src="https://apis.google.com/js/client.js?onload=googleApiClientReady"></script>
 		-->
 		
-		<script type="text/javascript" src="./moment-with-locales.min.js"></script>
-		<script type="text/javascript" src="./modernjiveplaylisting.js"></script>
 		<!--
 		<script async defer src="https://apis.google.com/js/api.js"
 			onload="this.onload=function(){};handleClientLoad()"
@@ -131,6 +130,9 @@
 			onload="this.onload=function(){};"
 			onreadystatechange="if (this.readyState === 'complete') this.onload()">
 		</script>
+		
+		<script type="text/javascript" src="./moment-with-locales.min.js"></script>
+		<script type="text/javascript" src="./modernjiveplaylisting.js"></script>
 		
 		<div style="display:none;">
 			<div id="video-container"></div>

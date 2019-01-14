@@ -16,17 +16,31 @@ function handleClientLoad() {
 	// Loads the client library and the auth2 library together for efficiency.
 	// Loading the auth2 library is optional here since `gapi.client.init` function will load
 	// it if not already loaded. Loading it upfront can save one network request.
+	
 	gapi.load('client:auth2', initClient);
+	
+	//var cid = $("#clientid").val();
+	
+	//var OAuthURL = '';
+	//OAuthURL = OAuthURL + 'https://accounts.google.com/o/oauth2/auth?';
+	//OAuthURL = OAuthURL +  '' + 'client_id=' + cid;
+	//OAuthURL = OAuthURL + '&' + 'redirect_uri=http%3a%2f%2fsirokurocya%2esakura%2ene%2ejp%2fdevelopment%2fmodernjivescript%2findex%2ehtml';
+	//OAuthURL = OAuthURL + '&' + 'response_type=token';
+	//OAuthURL = OAuthURL + '&' + 'apiKey=AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE';
+	//OAuthURL = OAuthURL + '&' + 'scope=https://www.googleapis.com/auth/youtube';
+	
+	//window.location.href = OAuthURL;
+	
 }
 
 function initClient() {
 	
 	var cid = $("#clientid").val();
-	
+
 	// Initialize the client with API key and People API, and initialize OAuth with an
 	// OAuth 2.0 client ID and scopes (space delimited string) to request access.
 	gapi.client.init({
-		apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
+		apiKey: 'AIzaSyC5lOC0HsKLQtPBMk5NXCzDsM_4oe421XA',
 		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
 		clientId: cid,
 		scope: 'https://www.googleapis.com/auth/youtube'
@@ -40,6 +54,45 @@ function initClient() {
 		alert(error.message);
 		
 	});
+	
+	//gapi.client.request({
+	//	'clientId': cid,
+	//	'redirect_uri': 'http%3a%2f%2fsirokurocya%2esakura%2ene%2ejp%2fdevelopment%2fmodernjivescript%2f',
+	//	'response_type': 'token',
+	//	'apiKey': 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
+	//	'scope': 'https://www.googleapis.com/auth/youtube'
+	//	
+	//}).then(function(response) {
+	//	
+	//	handleAPILoadedSearch();
+	//	
+	//}, function(reason) {
+	//	
+	//	alert('[initClient] ' + reason);
+	//	
+	//});
+	
+	// Initialize the client with API key and People API, and initialize OAuth with an
+	// OAuth 2.0 client ID and scopes (space delimited string) to request access.
+	/*
+	gapi.client.init({
+		clientId: cid,
+		redirect_uri: 'http%3a%2f%2fsirokurocya%2esakura%2ene%2ejp%2fdevelopment%2fmodernjivescript%2f',
+		response_type: 'token',
+		apiKey: 'AIzaSyCfbrzcjjrBj2QCoERl15jaMuvruOA7UDE',
+		discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"],
+		scope: 'https://www.googleapis.com/auth/youtube'
+	}).then(function () {
+		// Listen for sign-in state changes.
+		gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+		// Handle the initial sign-in state.
+		updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+	}, function(error){
+		
+		alert(error.message);
+		
+	});
+	*/
 }
 
 function updateSigninStatus(isSignedIn) {
@@ -56,7 +109,7 @@ function handleAPILoadedSearch() {
 
 	// After the API loads, call a function to enable the search box.
 	
-	//$('#playlist-button').attr('disabled', false);
+	$('#playlist-button').attr('disabled', false);
 	$('#searchsong-button').attr('disabled', false);
 	$('#checkPlayList-button').attr('disabled', false);
 	$('#addPlayList-button').attr('disabled', false);
@@ -72,11 +125,15 @@ function handleAPILoadedSearch() {
 		var evtRow = "<div>datetime: " + moment().add(9, "h").toISOString() + "</div>";
 		$(".post-auth").empty().append(evtRow);
 		
-		$('#playlist-button').attr('disabled', false);
+		var access_token = window.location.href;
 		
-		$("#playlist-button").click(function(e){
+		$("#logon-button").click(function(e){
 			
 			handleClientLoad();
+			
+		});
+		
+		$("#playlist-button").click(function(e){
 			
 			$(".textplaylistname").empty().append("(selected text file...)");
 			$(".youtubeplaylistname").empty().append("(selected youtube playlist...)");
@@ -207,7 +264,7 @@ function handleAPILoadedSearch() {
 			}).then(function(response) {
 				$('.youtubeplaylistname').empty().append("[target youtube playlist name] <span style='font-weight:bold;'>" + response.result.items[0].snippet.title + "</span>");
 			}, function(reason) {
-				$(".error").append("[" + moment().add(9, "h").toISOString() + "] " + reason.statusText + "<br/>");
+				$(".error").append("[" + moment().add(9, "h").toISOString() + " youtubeplaylistname] " + reason.body + "<br/>");
 			});
 			
 			$(".result").empty();
@@ -645,12 +702,14 @@ function handleAPILoadedSearch() {
 			
 			var pid = $("#playlistid").val();
 			
+			$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + "playlistid:" + " " + pid + "<br/>");
+			
 			gapi.client.request({
 				
 				'path':'/youtube/v3/playlistItems',
 				'params':{
 					"part":"snippet",
-					"maxresults": "1",
+					"maxresults": "50",
 					"playlistId": pid
 				}
 				
@@ -661,13 +720,15 @@ function handleAPILoadedSearch() {
 				}
 				
 				$('#execDeleteAll-button').attr('disabled', false);
+				
+				$('.error').append("[" + moment().add(9, "h").toISOString() + "] " + "_DelArrVideoId:" + " " + _DelArrVideoId.lengh + "<br/>");
+			
+				
 			});
 			
 		});
 		
 		$("#execDeleteAll-button").click(function(e){
-			
-			handleClientLoad();
 			
 			$('.error').empty();
 			
@@ -702,7 +763,7 @@ function handleAPILoadedSearch() {
 				}
 				
 			}, function(reason) {
-				$(".error").append("[" + moment().add(9, "h").toISOString() + "] " + reason.statusText);
+				$(".error").append("[" + moment().add(9, "h").toISOString() + "] " + vid + " " + reason.statusText);
 			});
 			
 		}
